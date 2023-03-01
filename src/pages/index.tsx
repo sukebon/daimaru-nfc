@@ -1,28 +1,28 @@
 import Head from 'next/head';
 import Image from 'next/image';
 import { Inter } from 'next/font/google';
-import { Box, Button, Container } from '@chakra-ui/react';
+import { Box, Button, Container, Flex } from '@chakra-ui/react';
 import { useState } from 'react';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export default function Home() {
-  const [log, setLog] = useState("");
+  const [log, setLog] = useState("ここに表示");
   const readNFC = async () => {
     try {
       const reader = new NDEFReader();
       await reader.scan();
 
-      reader.onreadingerror = (event) => {
+      reader.onreadingerror = async (event) => {
         console.log(event);
         alert("何らかの原因で読み込みに失敗しました");
       };
-      reader.onreading = (event) => {
+      reader.onreading = async (event) => {
         setLog(event.serialNumber);
       };
 
     } catch (error) {
-      alert("NFCカードの読み込み準備に失敗しました");
+      alert("NFCカードの読み込み準備に失敗しました" + error);
     }
 
   };
@@ -34,12 +34,14 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Box w="full">
-        <Container maxW="600px" mt={6}>
-          <Box w="full" textAlign="center">
-            <Button onClick={readNFC}>ボタン</Button>
-          </Box>
-          <Box>{log}</Box>
+      <Box w="full" h="100vh" p={6}>
+        <Container maxW="600px"  >
+          <Flex w="full" flexDirection="column" justifyContent="center">
+            <Box w="full" textAlign="center">
+              <Button onClick={readNFC}>ボタン</Button>
+            </Box>
+            <Box w="full" textAlign="center" mt={6}>{log}</Box>
+          </Flex>
         </Container>
       </Box>
     </>
