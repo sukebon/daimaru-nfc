@@ -8,20 +8,21 @@ const inter = Inter({ subsets: ['latin'] });
 
 export default function Home() {
   const [log, setLog] = useState("ここに表示");
-  const readNFC = async () => {
+  const readNFC = () => {
     try {
       const reader = new NDEFReader();
-      await reader.scan();
+      reader.scan().then(() => {
 
-      // reader.onreadingerror = async (event) => {
-      //   console.log(event);
-      //   alert("何らかの原因で読み込みに失敗しました");
-      // };
-      reader.onreading = async (event) => {
-        setLog(event.serialNumber);
-        console.log(event.message.records);
-        alert(event.serialNumber);
-      };
+        reader.onreadingerror = (event) => {
+          console.log(event);
+          alert("何らかの原因で読み込みに失敗しました");
+        };
+        reader.onreading = (event) => {
+          setLog(event.serialNumber);
+          console.log(event.message.records);
+          alert(event.serialNumber);
+        };
+      });
 
     } catch (error) {
       alert("NFCカードの読み込み準備に失敗しました" + error);
