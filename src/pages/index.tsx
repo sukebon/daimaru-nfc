@@ -13,23 +13,16 @@ export default function Home() {
       const reader = new NDEFReader();
       await reader.scan();
 
-      reader.addEventListener("error", () => {
-        console.log("Error");
-      });
+      reader.onreadingerror = (event) => {
+        console.log(event);
+        alert("何らかの原因で読み込みに失敗しました");
+      };
+      reader.onreading = (event) => {
+        setLog(event.serialNumber);
+      };
 
-      reader.addEventListener("reading", ({ message, serialNumber }: any) => {
-        console.log(`> Serial Number: ${serialNumber}`);
-        console.log(message);
-        const record = message.records[0];
-        const { data, encoding, recordType } = record;
-        if (recordType === "text") {
-          const textDecoder = new TextDecoder(encoding);
-          setLog(textDecoder.decode(data));
-
-        }
-      });
     } catch (error) {
-
+      alert("NFCカードの読み込み準備に失敗しました");
     }
 
   };
