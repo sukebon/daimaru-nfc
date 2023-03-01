@@ -13,12 +13,14 @@ export default function Home() {
       const reader = new NDEFReader();
       await reader.scan();
 
-      reader.onreadingerror = async (event) => {
-        console.log(event);
-        alert("何らかの原因で読み込みに失敗しました");
-      };
+      // reader.onreadingerror = async (event) => {
+      //   console.log(event);
+      //   alert("何らかの原因で読み込みに失敗しました");
+      // };
       reader.onreading = async (event) => {
         setLog(event.serialNumber);
+        console.log(event.message.records);
+        alert(event.serialNumber);
       };
 
     } catch (error) {
