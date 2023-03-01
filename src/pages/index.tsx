@@ -1,13 +1,28 @@
 import Head from 'next/head';
 import Image from 'next/image';
 import { Inter } from 'next/font/google';
-import { Box, Button, Container, Flex } from '@chakra-ui/react';
+import { Box, Button, Container, Flex, Heading, Input, Stack } from '@chakra-ui/react';
 import { useState } from 'react';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export default function Home() {
-  const [log, setLog] = useState("ここに表示");
+  const [writeLog, setWriteLog] = useState("");
+  const [readLog, setReadLog] = useState("ここに表示");
+  const [text, setText] = useState("");
+
+  const addNFC = async () => {
+    try {
+      const reader = new NDEFReader();
+      await reader.write(text);
+      setWriteLog(`write: ${text}`);
+    } catch (error) {
+      alert('書き込みに失敗しました。' + error);
+      console.log(error);
+    } finally {
+      setText("");
+    };
+  };
   const readNFC = () => {
     try {
       const reader = new NDEFReader();
@@ -18,7 +33,7 @@ export default function Home() {
           alert("何らかの原因で読み込みに失敗しました");
         };
         reader.onreading = (event) => {
-          setLog(event.serialNumber);
+          setReadLog(event.serialNumber);
           console.log(event.message.records);
           alert(event.serialNumber);
         };
@@ -38,12 +53,21 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Box w="full" h="100vh" p={6}>
-        <Container maxW="600px"  >
-          <Flex w="full" flexDirection="column" justifyContent="center">
-            <Box w="full" textAlign="center">
-              <Button onClick={readNFC}>ボタン</Button>
+        <Container maxW="600px" >
+          <Flex w="full" h="100vh" alignItems="center" flexDirection="column" justifyContent="center">
+            <Stack spacing={3} w="full">
+              <Heading size="sm">テキストを入力</Heading>
+              <Flex gap={3}>
+                <Input w="full" type="text" value={text} onChange={(e) => setText(e.target.value)} />
+                <Button onClick={addNFC}>書き込む</Button>
+              </Flex>
+            </Stack>
+            <Box mt={12}>
+              <Box w="full" textAlign="center">
+                <Button colorScheme="blue" w="full" onClick={readNFC}>スキャン</Button>
+              </Box>
+              <Box w="full" textAlign="center" mt={6}>{readLog}</Box>
             </Box>
-            <Box w="full" textAlign="center" mt={6}>{log}</Box>
           </Flex>
         </Container>
       </Box>
